@@ -22,68 +22,58 @@ model, preprocessor = load_model_and_resources()
 st.title("🎓 Прогнозування успішності студента")
 
 st.write(
-    "Введіть дані студента, щоб спрогнозувати "
-    "його підсумковий результат."
+    "Введіть дані студента для прогнозування "
+    "його підсумкового результату."
 )
 
-attendance = st.slider(
-    "Відвідуваність (%)",
-    min_value=0,
-    max_value=100,
-    value=80,
-    step=1
-)
+col1, col2 = st.columns(2)
 
-midterm = st.number_input(
-    "Оцінка за проміжний контроль",
-    min_value=0.0,
-    max_value=100.0,
-    value=70.0,
-    step=1.0
-)
+with col1:
+    attendance = st.slider(
+        "Відвідуваність (%)",
+        0,
+        100,
+        80
+    )
 
-final = st.number_input(
-    "Оцінка за фінальний іспит",
-    min_value=0.0,
-    max_value=100.0,
-    value=75.0,
-    step=1.0
-)
+    midterm = st.number_input(
+        "Оцінка за проміжний контроль",
+        0.0,
+        100.0,
+        70.0
+    )
 
-assignments_avg = st.number_input(
-    "Середня оцінка за завдання",
-    min_value=0.0,
-    max_value=100.0,
-    value=80.0,
-    step=1.0
-)
+    final = st.number_input(
+        "Оцінка за фінальний іспит",
+        0.0,
+        100.0,
+        75.0
+    )
 
-quizzes_avg = st.number_input(
-    "Середня оцінка за тести",
-    min_value=0.0,
-    max_value=100.0,
-    value=75.0,
-    step=1.0
-)
+with col2:
+    assignments_avg = st.number_input(
+        "Середня оцінка за завдання",
+        0.0,
+        100.0,
+        80.0
+    )
 
-study_hours = st.number_input(
-    "Кількість годин навчання на тиждень",
-    min_value=0.0,
-    max_value=100.0,
-    value=10.0,
-    step=1.0
-)
+    quizzes_avg = st.number_input(
+        "Середня оцінка за тести",
+        0.0,
+        100.0,
+        75.0
+    )
 
-def preprocess_input(
-    attendance,
-    midterm,
-    final,
-    assignments_avg,
-    quizzes_avg,
-    study_hours,
-    preprocessor
-):
-    df = pd.DataFrame({
+    study_hours = st.number_input(
+        "Годин навчання на тиждень",
+        0.0,
+        100.0,
+        10.0
+    )
+
+def preprocess_input():
+    data = pd.DataFrame({
         "Attendance": [attendance],
         "Midterm": [midterm],
         "Final": [final],
@@ -92,21 +82,14 @@ def preprocess_input(
         "Study_Hours_per_Week": [study_hours]
     })
 
-    df_processed = preprocessor.transform(df)
+    return preprocessor.transform(data)
 
-    return df_processed
-
-if st.button("Спрогнозувати результат"):
-
-    input_data = preprocess_input(
-        attendance,
-        midterm,
-        final,
-        assignments_avg,
-        quizzes_avg,
-        study_hours,
-        preprocessor
-    )
+if st.button(
+    "Спрогнозувати результат",
+    type="primary",
+    use_container_width=True
+):
+    input_data = preprocess_input()
 
     prediction = model.predict(
         input_data,
