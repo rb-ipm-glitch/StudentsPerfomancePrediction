@@ -3,6 +3,8 @@ import pandas as pd
 import streamlit as st
 from tensorflow.keras.models import load_model
 
+
+# Завантаження моделі та препроцесора
 @st.cache_resource
 def load_model_and_resources():
     model = load_model(
@@ -29,54 +31,69 @@ st.write(
 col1, col2 = st.columns(2)
 
 with col1:
+
+    department = st.selectbox(
+        "Факультет",
+        [
+            "CS",
+            "Engineering",
+            "Business",
+            "Mathematics"
+        ]
+    )
+
     attendance = st.slider(
         "Відвідуваність (%)",
-        0,
-        100,
-        80
+        min_value=0,
+        max_value=100,
+        value=80
     )
 
     midterm = st.number_input(
         "Оцінка за проміжний контроль",
-        0.0,
-        100.0,
-        70.0
+        min_value=0.0,
+        max_value=100.0,
+        value=70.0
     )
 
     final = st.number_input(
         "Оцінка за фінальний іспит",
-        0.0,
-        100.0,
-        75.0
+        min_value=0.0,
+        max_value=100.0,
+        value=75.0
     )
 
+
 with col2:
+
     assignments_avg = st.number_input(
         "Середня оцінка за завдання",
-        0.0,
-        100.0,
-        80.0
+        min_value=0.0,
+        max_value=100.0,
+        value=80.0
     )
 
     quizzes_avg = st.number_input(
         "Середня оцінка за тести",
-        0.0,
-        100.0,
-        75.0
+        min_value=0.0,
+        max_value=100.0,
+        value=75.0
     )
 
     study_hours = st.number_input(
         "Годин навчання на тиждень",
-        0.0,
-        100.0,
-        10.0
+        min_value=0.0,
+        max_value=100.0,
+        value=10.0
     )
-
+    
 def preprocess_input():
+
     data = pd.DataFrame({
-        "Attendance": [attendance],
-        "Midterm": [midterm],
-        "Final": [final],
+        "Department": [department],
+        "Attendance (%)": [attendance],
+        "Midterm_Score": [midterm],
+        "Final_Score": [final],
         "Assignments_Avg": [assignments_avg],
         "Quizzes_Avg": [quizzes_avg],
         "Study_Hours_per_Week": [study_hours]
@@ -89,6 +106,7 @@ if st.button(
     type="primary",
     use_container_width=True
 ):
+
     input_data = preprocess_input()
 
     prediction = model.predict(
